@@ -1773,6 +1773,646 @@ console.log(john.greeting());
 console.log(Customer.getMembershipCost());
 =================================================================
 ===
+document.getElementById('button').addEventListener('click', loadData);
 
+function loadData() {
+  // Create an XHR Object
+  const xhr = new XMLHttpRequest();
+
+  // OPEN
+  xhr.open('GET', 'data.txt', true);
+
+  // console.log('READYSTATE', xhr.readyState);
+
+  // Optional - Used for spinners/loaders
+  xhr.onprogress = function(){
+    console.log('READYSTATE', xhr.readyState);
+  }
+
+  xhr.onload = function(){
+    console.log('READYSTATE', xhr.readyState);
+    if(this.status === 200) {
+      // console.log(this.responseText);
+      document.getElementById('output').innerHTML = `<h1>${this.responseText}</h1>`;
+    }
+  }
+
+  // xhr.onreadystatechange = function() {
+  //   console.log('READYSTATE', xhr.readyState);
+  //   if(this.status === 200 && this.readyState === 4){
+  //     console.log(this.responseText);
+  //   }
+  // }
+
+  xhr.onerror = function() {
+    console.log('Request error...');
+  }
+
+  xhr.send();
+
+
+    // readyState Values
+    // 0: request not initialized 
+    // 1: server connection established
+    // 2: request received 
+    // 3: processing request 
+    // 4: request finished and response is ready
+
+
+  // HTTP Statuses
+  // 200: "OK"
+  // 403: "Forbidden"
+  // 404: "Not Found"
+}==================================
+
+document.getElementById('button1').addEventListener('click', loadCustomer);
+
+document.getElementById('button2').addEventListener('click', loadCustomers);
+
+// Load Single Customer
+function loadCustomer(e) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.open('GET', 'customer.json', true);
+
+  xhr.onload = function(){
+    if(this.status === 200) {
+      // console.log(this.responseText);
+
+      const customer = JSON.parse(this.responseText);
+
+      const output = `
+        <ul>
+          <li>ID: ${customer.id}</li>
+          <li>Name: ${customer.name}</li>
+          <li>Company: ${customer.company}</li>
+          <li>Phone: ${customer.phone}</li>
+        </ul>
+      `;
+
+      document.getElementById('customer').innerHTML = output;
+    }
+  }
+
+  xhr.send();
+}
+
+
+// Load Customers
+function loadCustomers(e) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.open('GET', 'customers.json', true);
+
+  xhr.onload = function(){
+    if(this.status === 200) {
+      // console.log(this.responseText);
+
+      const customers = JSON.parse(this.responseText);
+
+      let output = '';
+
+      customers.forEach(function(customer){
+        output += `
+        <ul>
+          <li>ID: ${customer.id}</li>
+          <li>Name: ${customer.name}</li>
+          <li>Company: ${customer.company}</li>
+          <li>Phone: ${customer.phone}</li>
+        </ul>
+      `;
+      });
+
+      document.getElementById('customers').innerHTML = output;
+    }
+  }
+
+  xhr.send();
+}
+
+=========================================
+
+const posts = [
+  {title: 'Post One', body: 'This is post one'},
+  {title: 'Post Two', body: 'This is post two'}
+];
+
+// function createPost(post) {
+//   setTimeout(function() {
+//     posts.push(post);
+//   }, 2000);
+// }
+
+
+// function getPosts() {
+//   setTimeout(function() {
+//     let output = '';
+//     posts.forEach(function(post){
+//       output += `<li>${post.title}</li>`;
+//     });
+//     document.body.innerHTML = output;
+//   }, 1000);
+// }
+
+// createPost({title: 'Post Three', body: 'This is post three'});
+
+// getPosts();
+
+
+function createPost(post, callback) {
+  setTimeout(function() {
+    posts.push(post);
+    callback();
+  }, 2000);
+}
+
+
+function getPosts() {
+  setTimeout(function() {
+    let output = '';
+    posts.forEach(function(post){
+      output += `<li>${post.title}</li>`;
+    });
+    document.body.innerHTML = output;
+  }, 1000);
+}
+
+createPost({title: 'Post Three', body: 'This is post three'}, getPosts);
+
+
+============================
+
+const posts = [
+  {title: 'Post One', body:'This is post one'},
+  {title: 'Post Two', body: 'This is post two'}
+];
+
+function createPost(post) {
+  return new Promise(function(resolve, reject){
+    setTimeout(function() {
+      posts.push(post);
+
+      const error = false;
+
+      if(!error) {
+        resolve();
+      } else {
+        reject('Error: Something went wrong');
+      }
+    }, 2000);
+  });
+}
+
+function getPosts() {
+  setTimeout(function() {
+    let output = '';
+    posts.forEach(function(post){
+      output += `<li>${post.title}</li>`;
+    });
+    document.body.innerHTML = output;
+  }, 1000);
+}
+
+createPost({title: 'Post Three', body: 'This is post three'})
+.then(getPosts)
+.catch(function(err) {
+  console.log(err);
+});
+===========================
+document.getElementById('button1').addEventListener('click', getText);
+
+document.getElementById('button2').addEventListener('click', getJson);
+
+document.getElementById('button3').addEventListener('click', getExternal);
+
+// Get local text file data
+function getText() {
+  fetch('test.txt')
+    .then(function(res){
+      return res.text();
+    })
+    .then(function(data) {
+      console.log(data);
+      document.getElementById('output').innerHTML = data;
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+}
+
+
+// Get local json data
+function getJson() {
+  fetch('posts.json')
+    .then(function(res){
+      return res.json();
+    })
+    .then(function(data) {
+      console.log(data);
+      let output = '';
+      data.forEach(function(post) {
+        output += `<li>${post.title}</li>`;
+      });
+      document.getElementById('output').innerHTML = output;
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+}
+
+
+// Get from external API
+function getExternal() {
+  fetch('https://api.github.com/users')
+    .then(function(res){
+      return res.json();
+    })
+    .then(function(data) {
+      console.log(data);
+      let output = '';
+      data.forEach(function(user) {
+        output += `<li>${user.login}</li>`;
+      });
+      document.getElementById('output').innerHTML = output;
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+}
++==========================
+
+document.getElementById('button1').addEventListener('click', getText);
+
+document.getElementById('button2').addEventListener('click', getJson);
+
+document.getElementById('button3').addEventListener('click', getExternal);
+
+// Get local text file data
+function getText() {
+  fetch('test.txt')
+    .then(res => res.text())
+    .then(data => {
+      console.log(data);
+      document.getElementById('output').innerHTML = data;
+    })
+    .catch(err => console.log(err));
+}
+
+
+// Get local json data
+function getJson() {
+  fetch('posts.json')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      let output = '';
+      data.forEach(function(post) {
+        output += `<li>${post.title}</li>`;
+      });
+      document.getElementById('output').innerHTML = output;
+    })
+    .catch(err => console.log(err));
+}
+
+
+// Get from external API
+function getExternal() {
+  fetch('https://api.github.com/users')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      let output = '';
+      data.forEach(function(user) {
+        output += `<li>${user.login}</li>`;
+      });
+      document.getElementById('output').innerHTML = output;
+    })
+    .catch(err => console.log(err));
+}
+
+=================
+// const sayHello = function() {
+//   console.log('Hello');
+// }
+
+// const sayHello = () => {
+//   console.log('Hello');
+// }
+
+// One line function does not need braces
+// const sayHello = () => console.log('Hello');
+
+// One line returns
+// const sayHello = () => 'Hello';
+
+// Same as above
+// const sayHello = function() {
+//   return 'Hello';
+// }
+
+// Return object
+// const sayHello = () => ({ msg: 'Hello' });
+
+// Single param does not need parenthesis
+// const sayHello = name => console.log(`Hello ${name}`);
+
+// Multuiple params need parenthesis
+// const sayHello = (firstName, lastName) => console.log(`Hello ${firstName} ${lastName}`);
+
+// sayHello('Brad', 'Traversy');
+
+const users = ['Nathan', 'John', 'William'];
+
+// const nameLengths = users.map(function(name) {
+//   return name.length;
+// });
+
+// Shorter
+// const nameLengths = users.map((name) => {
+//   return name.length;
+// });
+
+// Shortest
+const nameLengths = users.map(name => name.length);
+
+console.log(nameLengths);
+===================
+// async function myFunc() {
+//   const promise = new Promise((resolve, reject) => {
+//     setTimeout(() => resolve('Hello'), 1000);
+//   });
+
+//   const error = false;
+
+//   if(!error){
+//     const res = await promise; // Wait until promise is resolved
+//     return res;
+//   } else {
+//     await Promise.reject(new Error('Something went wrong'));
+//   }
+// }
+
+// myFunc()
+//   .then(res => console.log(res))
+//   .catch(err => console.log(err));
+
+async function getUsers() {
+  // await response of the fetch call
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+
+  // Only proceed once its resolved
+  const data = await response.json();
+
+  // only proceed once second promise is resolved
+  return data;
+}
+
+getUsers().then(users => console.log(users));
+========================
+// async function myFunc() {
+//   const promise = new Promise((resolve, reject) => {
+//     setTimeout(() => resolve('Hello'), 1000);
+//   });
+
+//   const error = false;
+
+//   if(!error){
+//     const res = await promise; // Wait until promise is resolved
+//     return res;
+//   } else {
+//     await Promise.reject(new Error('Something went wrong'));
+//   }
+// }
+
+// myFunc()
+//   .then(res => console.log(res))
+//   .catch(err => console.log(err));
+
+async function getUsers() {
+  // await response of the fetch call
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+
+  // Only proceed once its resolved
+  const data = await response.json();
+
+  // only proceed once second promise is resolved
+  return data;
+}
+
+getUsers().then(users => console.log(users));
+================
+const user = {email: 'jdoe@gmail.com'};
+
+try {
+  // Produce a ReferenceError
+  // myFunction();
+
+  // Produce a TypeError
+  // null.myFunction();
+
+  // Will produce SyntaxError
+  // eval('Hello World');
+
+  // Will produce a URIError
+  // decodeURIComponent('%');
+
+  if(!user.name) {
+    //throw 'User has no name';
+    throw new SyntaxError('User has no name');
+  }
+
+} catch(e) {
+  console.log(`User Error: ${e.message}`);
+  // console.log(e);
+  // console.log(e.message);
+  // console.log(e.name);
+  // console.log(e instanceof TypeError);
+} finally {
+  console.log('Finally runs reguardless of result...');
+}
+
+console.log('Program continues...');
+========================
+let re;
+re = /hello/;
+re = /hello/i; // i =  case insensitive
+// re = /hello/g; // Global search
+
+// console.log(re);
+// console.log(re.source);
+
+// exec() - Return result in an array or null
+// const result = re.exec('hello world');
+
+// console.log(result);
+// console.log(result[0]);
+// console.log(result.index);
+// console.log(result.input);
+
+// test() - Returns true or false
+// const result = re.test('Hello');
+// console.log(result);
+
+// match() - Return result array or null
+// const str = 'Hello There';
+// const result = str.match(re);
+// console.log(result);
+
+// search() - Returns index of the first match if not found retuns -1
+// const str = 'Brad Hello There';
+// const result = str.search(re);
+// console.log(result);
+
+// replace() - Return new string with some or all matches of a pattern
+// const str = 'Hello There';
+// const newStr = str.replace(re, 'Hi');
+// console.log(newStr);
+================================
+let re;
+// Literal Characters
+re = /hello/;
+re = /hello/i;
+
+// Metacharacter Symbols
+re = /^h/i;           // Must start with
+re = / world$/i;     // Must ends with
+re = /^hello$/i;     // Must begin and end with
+re = /h.llo/i;      // Matches any ONE character
+re = /h*llo/i;      // Matches any character 0 or more times
+re = /gre?a?y/i;    // Optional character
+re = /gre?a?y\?/i;    // Escape character 
+
+
+// String to match
+const str = 'Gray?';
+
+
+// Log Results
+const result = re.exec(str);
+console.log(result);
+
+function reTest(re, str) {
+  if(re.test(str)) {
+    console.log(`${str} matches ${re.source}`);
+  } else {
+    console.log(`${str} does NOT match ${re.source}`);
+  }
+}
+
+reTest(re, str);
+===============
+let re;
+// Literal Characters
+re = /hello/;
+re = /hello/i;
+
+// Metacharacter Symbols
+re = /^h/i;           // Must start with
+re = / world$/i;     // Must ends with
+re = /^hello$/i;     // Must begin and end with
+re = /h.llo/i;      // Matches any ONE character
+re = /h*llo/i;      // Matches any character 0 or more times
+re = /gre?a?y/i;    // Optional character
+re = /gre?a?y\?/i;    // Escape character 
+
+
+// Brackets [] - Character Sets
+re = /gr[ae]y/i;      // Must be an a or e
+re = /[GF]ray/i;      // Must be a G or F
+re = /[^GF]ray/i;      // Match anything except a G or F
+re = /[A-Z]ray/;      // Match any uppercase letter
+re = /[a-z]ray/;      // Match any lowercase letter
+re = /[A-Za-z]ray/;   // Match any  letter
+re = /[0-9][0-9]ray/;      // Match any digit
+
+// Braces {} - Quantifiers
+re = /Hel{2}o/i;      // Must occur exactly {m} amount of times
+re = /Hel{2,4}o/i;      // Must occur exactly {m} amount of times
+re = /Hel{2,}o/i;      // Must occur at least {m} times
+
+// Paretheses () - Grouping
+re = /^([0-9]x){3}$/
+
+// String to match
+const str = '3x3x3x';
+
+// Log Results
+const result = re.exec(str);
+console.log(result);
+
+function reTest(re, str) {
+  if(re.test(str)) {
+    console.log(`${str} matches ${re.source}`);
+  } else {
+    console.log(`${str} does NOT match ${re.source}`);
+  }
+}
+
+reTest(re, str);
+========================
+let re;
+// Literal Characters
+re = /hello/;
+re = /hello/i;
+
+// Metacharacter Symbols
+re = /^h/i;           // Must start with
+re = / world$/i;     // Must ends with
+re = /^hello$/i;     // Must begin and end with
+re = /h.llo/i;      // Matches any ONE character
+re = /h*llo/i;      // Matches any character 0 or more times
+re = /gre?a?y/i;    // Optional character
+re = /gre?a?y\?/i;    // Escape character 
+
+
+// Brackets [] - Character Sets
+re = /gr[ae]y/i;      // Must be an a or e
+re = /[GF]ray/i;      // Must be a G or F
+re = /[^GF]ray/i;      // Match anything except a G or F
+re = /[A-Z]ray/;      // Match any uppercase letter
+re = /[a-z]ray/;      // Match any lowercase letter
+re = /[A-Za-z]ray/;   // Match any  letter
+re = /[0-9][0-9]ray/;      // Match any digit
+
+// Braces {} - Quantifiers
+re = /Hel{2}o/i;      // Must occur exactly {m} amount of times
+re = /Hel{2,4}o/i;      // Must occur exactly {m} amount of times
+re = /Hel{2,}o/i;      // Must occur at least {m} times
+
+// Paretheses () - Grouping
+re = /^([0-9]x){3}$/
+
+// Shorthand Character Classes
+re = /\w/;    // Word character - alphanumeric or _
+re = /\w+/;    // + = one or more
+re = /\W/;    // Non-Word character
+re = /\d/;    // Match any digit
+re = /\d+/;    // Match any digit 0 or more times
+re = /\D/;      // Match any Non-digit
+re = /\s/;      // Match whitespace char
+re = /\S/;      // Match non-whitespace char
+re = /Hell\b/i; // Word boundary
+
+// Assertions
+re = /x(?=y)/;  // Match x only if followed by y
+re = /x(?!y)/;  // Match x only if NOT followed by y
+
+// String to match
+const str = 'dkjekdxydjekdj';
+
+// Log Results
+const result = re.exec(str);
+console.log(result);
+
+function reTest(re, str) {
+  if(re.test(str)) {
+    console.log(`${str} matches ${re.source}`);
+  } else {
+    console.log(`${str} does NOT match ${re.source}`);
+  }
+}
+
+reTest(re, str);
+=============================
 
 
