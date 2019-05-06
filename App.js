@@ -1,4 +1,8 @@
 // Log to console
+
+// im open to help, if you have doubts or need any clarifications. for free :D. email me rockieroshan@gmail.com and i can refer you too. 
+
+
 console.log('Hello World');
 console.log(123);
 console.log(true);
