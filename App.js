@@ -1,6 +1,6 @@
 // Log to console
 
-// im open to help, if you have doubts or need any clarifications. for free :D. email me rockieroshan@gmail.com and i can refer you too. 
+// any clarifications or assistance regarding UI feel free to email me at rockieroshan@gmail.com and wrt job referrals too. All the best 
 
 
 console.log('Hello World');
