@@ -1,6 +1,6 @@
 // Log to console
 
-// any clarifications or assistance regarding UI feel free to email me at rockieroshan@gmail.com and wrt job referrals too. All the best 
+
 
 
 console.log('Hello World');
